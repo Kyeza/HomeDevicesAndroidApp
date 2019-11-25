@@ -49,13 +49,16 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.connect_all:
+                mAdapter.connectAllDevices();
+                break;
 
             case R.id.disconnect_all:
-
+                mAdapter.disconnectAllDevices();
             case R.id.show_linked:
 
-            default:
-                return super.onOptionsItemSelected(item);
+
         }
+
+        return true;
     }
 }

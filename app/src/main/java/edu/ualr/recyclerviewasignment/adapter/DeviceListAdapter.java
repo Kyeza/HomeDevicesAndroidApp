@@ -1,6 +1,7 @@
 package edu.ualr.recyclerviewasignment.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,28 +42,26 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
             public int compare(DeviceListItem o1, DeviceListItem o2) {
 
                 if (o1.isSection() && !o2.isSection()) {
-                    if ( o1.getDeviceStatus().ordinal() <= o2.getDeviceStatus().ordinal()) {
+                    if (o1.getDeviceStatus().ordinal() <= o2.getDeviceStatus().ordinal()) {
                         return -1;
                     } else {
                         return 1;
                     }
-                }
-                else if (!o1.isSection() && o2.isSection()) {
-                    if ( o1.getDeviceStatus().ordinal() < o2.getDeviceStatus().ordinal()) {
+                } else if (!o1.isSection() && o2.isSection()) {
+                    if (o1.getDeviceStatus().ordinal() < o2.getDeviceStatus().ordinal()) {
                         return -1;
                     } else {
                         return 1;
                     }
-                }
-                else if ((!o1.isSection() && !o2.isSection()) || (o1.isSection() && o2.isSection())){
+                } else if ((!o1.isSection() && !o2.isSection()) || (o1.isSection() && o2.isSection())) {
                     return o1.getDeviceStatus().ordinal() - o2.getDeviceStatus().ordinal();
-                }
-                else return 0;
+                } else return 0;
             }
 
             @Override
             public void onChanged(int position, int count) {
                 notifyDataSetChanged();
+
             }
 
             @Override
@@ -117,6 +116,7 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         DeviceListItem item = mItems.get(position);
+
         if (holder instanceof DeviceViewHolder) {
             DeviceViewHolder view = (DeviceViewHolder) holder;
             Device device = (Device) item;
@@ -185,5 +185,49 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
             }
             mItems.updateItemAt(getAdapterPosition(), device);
         }
+    }
+
+    public void connectAllDevices() {
+
+        mItems.beginBatchedUpdates();
+        for (int i = 0; i < mItems.size(); i++) {
+
+            DeviceListItem deviceListItem = mItems.get(i);
+
+            if (deviceListItem instanceof Device) {
+
+                Device device = (Device) deviceListItem;
+                if (device.getDeviceStatus() == Device.DeviceStatus.Ready) {
+                    device.setDeviceStatus(Device.DeviceStatus.Connected);
+                    mItems.updateItemAt(i, device);
+                }
+            }
+        }
+        mItems.endBatchedUpdates();
+    }
+
+
+    public void disconnectAllDevices() {
+
+        mItems.beginBatchedUpdates();
+        for (int i = 0; i < mItems.size(); i++) {
+
+            DeviceListItem deviceListItem = mItems.get(i);
+
+            if (deviceListItem instanceof Device) {
+
+                Device device = (Device) deviceListItem;
+
+                if (device.getDeviceStatus() == Device.DeviceStatus.Connected) {
+
+                    device.setLastConnection(new Date());
+                    device.setDeviceStatus(Device.DeviceStatus.Ready);
+                    mItems.updateItemAt(i, device);
+                }
+            }
+        }
+
+        mItems.endBatchedUpdates();
+
     }
 }
