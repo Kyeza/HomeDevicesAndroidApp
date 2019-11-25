@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SortedList;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +24,7 @@ import edu.ualr.recyclerviewasignment.model.DeviceListItem;
 import edu.ualr.recyclerviewasignment.model.DeviceSection;
 
 /**
- * Created by irconde on 2019-10-04.
+ * Created by kyeza on 2019-10-04.
  */
 public class DeviceListAdapter extends RecyclerView.Adapter {
 

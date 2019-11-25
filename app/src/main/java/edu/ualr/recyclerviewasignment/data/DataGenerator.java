@@ -10,7 +10,7 @@ import edu.ualr.recyclerviewasignment.model.DeviceListItem;
 import edu.ualr.recyclerviewasignment.model.DeviceSection;
 
 /**
- * Created by irconde on 2019-10-04.
+ * Created by kyeza on 2019-10-04.
  */
 public class DataGenerator {
 

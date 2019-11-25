@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import java.util.Date;
 
 /**
- * Created by irconde on 2019-10-04.
+ * Created by kyeza on 2019-10-04.
  */
 public class Device extends DeviceListItem {
     private String deviceId;

@@ -1,7 +1,7 @@
 package edu.ualr.recyclerviewasignment.model;
 
 /**
- * Created by irconde on 2019-10-04.
+ * Created by kyeza on 2019-10-04.
  */
 public class DeviceSection extends DeviceListItem {
 

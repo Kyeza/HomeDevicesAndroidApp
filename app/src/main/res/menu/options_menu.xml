@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/connect_all"
+        android:title="@string/connect_all_label" />
+
+    <item
+        android:id="@+id/disconnect_all"
+        android:title="@string/disconnect_all_label" />
+
+    <item
+        android:id="@+id/show_linked"
+        android:title="@string/show_linked_label"
+        android:checkable="true"/>
+
+</menu>
