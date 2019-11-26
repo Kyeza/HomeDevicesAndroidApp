@@ -11,6 +11,7 @@
     <item
         android:id="@+id/show_linked"
         android:title="@string/show_linked_label"
-        android:checkable="true"/>
+        android:checkable="true"
+        android:checked="true"/>
 
 </menu>

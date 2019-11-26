@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -34,8 +35,17 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
 
     private SortedList<DeviceListItem> mItems;
     private Context mContext;
+    private List<Device> linkedDevices;
 
-    public DeviceListAdapter(Context context) {
+    final private ListItemClickListener mOnClickListener;
+
+    public interface ListItemClickListener {
+        void onListItemClick(int position, Device device);
+    }
+
+    public DeviceListAdapter(Context context, ListItemClickListener listener) {
+        this.mOnClickListener = listener;
+        this.linkedDevices = new ArrayList<>();
         this.mContext = context;
         this.mItems = new SortedList<>(DeviceListItem.class, new SortedList.Callback<DeviceListItem>() {
             @Override
@@ -151,7 +161,7 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public class DeviceViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class DeviceViewHolder extends RecyclerView.ViewHolder {
         private RelativeLayout image;
         private ImageView statusMark;
         private TextView name;
@@ -165,13 +175,25 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
             name = v.findViewById(R.id.name);
             elapsedTimeLabel = v.findViewById(R.id.elapsed_time);
             connectBtn = v.findViewById(R.id.device_connect_btn);
-            connectBtn.setOnClickListener(this);
+            connectBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toggleConnection();
+                }
+            });
+            RelativeLayout deviceLayout = v.findViewById(R.id.device_item_container);
+            deviceLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    viewDetail();
+                }
+            });
         }
 
-
-        @Override
-        public void onClick(View view) {
-            toggleConnection();
+        private void viewDetail() {
+            Device device = (Device) mItems.get(getAdapterPosition());
+            int positon = getAdapterPosition();
+            mOnClickListener.onListItemClick(positon, device);
         }
 
         private void toggleConnection() {
@@ -187,6 +209,10 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
         }
     }
 
+    public void updateDevice(int postion, Device device) {
+        mItems.updateItemAt(postion, device);
+    }
+
     public void connectAllDevices() {
 
         mItems.beginBatchedUpdates();
@@ -197,10 +223,12 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
             if (deviceListItem instanceof Device) {
 
                 Device device = (Device) deviceListItem;
+
                 if (device.getDeviceStatus() == Device.DeviceStatus.Ready) {
                     device.setDeviceStatus(Device.DeviceStatus.Connected);
-                    mItems.updateItemAt(i, device);
                 }
+
+                mItems.updateItemAt(i, device);
             }
         }
         mItems.endBatchedUpdates();
@@ -208,6 +236,40 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
 
 
     public void disconnectAllDevices() {
+        List<DeviceListItem> temp = new ArrayList<>();
+
+        for (int i = 0; i < mItems.size(); i++) {
+            temp.add(mItems.get(i));
+        }
+
+        mItems.clear();
+
+
+        mItems.beginBatchedUpdates();
+        for (int i = 0; i < temp.size(); i++) {
+
+            DeviceListItem deviceListItem = temp.get(i);
+
+            if (deviceListItem instanceof Device) {
+
+                Device device = (Device) deviceListItem;
+
+                if (device.getDeviceStatus() == Device.DeviceStatus.Connected) {
+                    device.setDeviceStatus(Device.DeviceStatus.Ready);
+                    device.setLastConnection(new Date());
+                }
+                temp.set(i, device);
+            }
+
+            mItems.add(temp.get(i));
+        }
+
+        mItems.endBatchedUpdates();
+
+    }
+
+    public void hideLinked() {
+
 
         mItems.beginBatchedUpdates();
         for (int i = 0; i < mItems.size(); i++) {
@@ -218,16 +280,28 @@ public class DeviceListAdapter extends RecyclerView.Adapter {
 
                 Device device = (Device) deviceListItem;
 
-                if (device.getDeviceStatus() == Device.DeviceStatus.Connected) {
+                if (device.getDeviceStatus() == Device.DeviceStatus.Linked) {
 
-                    device.setLastConnection(new Date());
-                    device.setDeviceStatus(Device.DeviceStatus.Ready);
-                    mItems.updateItemAt(i, device);
+                    mItems.removeItemAt(i);
+                    linkedDevices.add(device);
                 }
             }
         }
 
         mItems.endBatchedUpdates();
+
+    }
+
+    public void showLinked() {
+
+        if (!linkedDevices.isEmpty()) {
+            mItems.beginBatchedUpdates();
+            for (int i = 0; i < linkedDevices.size(); i++) {
+                mItems.add(linkedDevices.get(i));
+            }
+            mItems.endBatchedUpdates();
+            linkedDevices.clear();
+        }
 
     }
 }
