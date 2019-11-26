@@ -86,6 +86,13 @@ public class MainActivity extends AppCompatActivity implements DeviceListAdapter
                 }
             });
 
+            Device.DeviceType compareValue = device.getDeviceType();
+
+            if (compareValue != null) {
+                int spinnerPosition = adapter.getPosition(compareValue);
+                deviceTypeSpinner.setSelection(spinnerPosition);
+            }
+
             MaterialButton saveBtn = view.findViewById(R.id.save_btn);
 
             lastConnection.setText(DeviceDataFormatTools.getTimeSinceLastConnection(this, device));
